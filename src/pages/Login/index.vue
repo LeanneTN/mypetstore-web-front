@@ -58,7 +58,7 @@
             </form>
 
             <div class="call clearFix">
-              <a class="register" href="./register.html">立即注册</a>
+              <router-link class="register" to="/register">立即注册</router-link>
             </div>
           </div>
         </div>
@@ -68,7 +68,9 @@
 </template>
 
 <script>
+  import { reqLoginByAccount } from "@/api";
   import _util from "@/utils/util";
+  import { mapState } from 'vuex';
   export default {
     name: 'Login',
     data() {
@@ -88,6 +90,9 @@
         phoneCodeMsg : '',
       }
     },
+    computed:{
+
+    },
     mounted() {
 
     },
@@ -103,7 +108,7 @@
       },
 
       //账号密码登录
-      logInByPassword(){
+      async logInByPassword(){
         let formData={
           username : this.username,
           password : this.password,
@@ -119,15 +124,23 @@
         }
         //初步验证通过，通知Vuex向服务器发送请求
         else{ 
-          this.$store.dispatch(
-            'loginByAccount', 
-            {
-              username: this.username, 
-              password: this.password, 
-              code: this.code
-            }
-          );       
-          //获取vuex中的响应码数据
+          let result = await reqLoginByAccount(this.username, this.password, this.code);
+          console.log(result);    
+          //登录成功
+          if(result.status == 0){
+            //进行页面跳转
+            this.$store.dispatch('loginAccount'); 
+            this.$router.push({name:'home'});
+          }else if(result.status == 1){
+            this.passwordMsg = '用户名或密码错误！';
+            this.codeMsg = ''
+            this.getCaptcha();
+          }else if(result.status == 101){
+            this.passwordMsg = '';
+            this.codeMsg = '验证码错误！';
+            this.getCaptcha();
+          }
+
           
         }
       },
