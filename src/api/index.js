@@ -36,7 +36,7 @@ export const reqKaptcha = ()=>{
 export const reqLoginByAccount = (username,password,code)=>{
   //发请求：axios发请求返回Promise对象
   return requests({
-    url: '/user/get_login_account_info',
+    url: '/user/login',
     method: 'post',
     params: {
       username,
@@ -98,7 +98,7 @@ export const reqUpdateAccount = ()=>{
 export const reqCategoryList = ()=>{
   //发请求：axios发请求返回Promise对象
   return requests({
-    url: '/catalog/categories',
+    url: '/catalog/all_category',
     method: 'get',
   })
 }

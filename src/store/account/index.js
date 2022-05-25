@@ -1,29 +1,37 @@
-import { reqLoginAccount } from "@/api";
+import { reqLoginAccount, reqLoginByAccount } from "@/api";
 
 //home模块的小store
 const state = {
   loginAccount: null,
+  responseStatus: -1,
 };
 
 const mutations = {
-  LOGINACCOUNT(state,loginAccount){
+  LOGINBYACCOUNT(state, loginAccount){
+    console.log('mutation被调用');
     state.loginAccount = loginAccount;
-  }
+  },
+
+  RESPONSE(state, responseStatus){
+    console.log('mutation被调用');
+    state.responseStatus = responseStatus;
+  },
+
+
+
 };
 
 const actions = {
-  //通过API中的接口函数调用，向服务器发请求，获取数据
-  async loginAccount({commit}){
-    let result = await reqLoginAccount();
-    console.log('请求账号中...');
-    //已登录，则将账号信息保存
-    if(result.code == 200){
-      commit('LOGINACCOUNT',result.data)
+  //向服务器发请求登录
+  async loginByAccount(context, {username, password, code}){
+    let result = await reqLoginByAccount(username, password, code);
+    console.log('账号登录中...');
+    console.log(result);
+    //登录成功
+    if(result.status == 0){
+      context.commit('LOGINBYACCOUNT', result.data);
     }
-    //未登录
-    else if(result.code == 11){
-      console.log(result);
-    }
+    context.commit('RESPONSE', result.status);
   },
 };
 

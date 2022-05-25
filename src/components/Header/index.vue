@@ -101,7 +101,6 @@ export default {
   methods: {
     //搜索按钮的回调函数，需要向search路由进行跳转
     goSearch(){
-        console.log('进来了');
         //如果有query参数
         if(this.$route.query){
             let location = {
@@ -116,8 +115,7 @@ export default {
     },
   },
   mounted() {
-    //组件挂载完毕，通知Vuex发送请求，获取已登录账号
-    this.$store.dispatch('loginAccount');
+
   },
   computed:{
     ...mapState({
