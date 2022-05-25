@@ -11,26 +11,26 @@
     <div id="Menu">
       <div id="MenuContent">
         <router-link to="/cart">
-          <img align="middle" name="img_cart" src="./images/cart.gif" />
+          <img class="sep" align="middle" name="img_cart" src="./images/cart.gif" />
         </router-link>
 
         <span v-show="loginAccount==null">
-          <img  align="middle" src="./images/separator.gif" />
+          <img class="sep" align="middle" src="./images/separator.gif" />
           <router-link to="/login">Sign In</router-link>
         </span>
 
         <span v-show="loginAccount!=null">
-          <img align="middle" src="./images/separator.gif" />
+          <img class="sep" align="middle" src="./images/separator.gif" />
           <router-link to="/account">My Account</router-link>
 
-          <img align="middle" src="./images/separator.gif" />
+          <img class="sep" align="middle" src="./images/separator.gif" />
           <router-link to="/myOrders">My Orders</router-link>
 
-          <img align="middle" src="./images/separator.gif" />
+          <img class="sep" align="middle" src="./images/separator.gif" />
           <router-link to="/home">Sign Out</router-link>
         </span>
 
-        <img align="middle" src="./images/separator.gif" />
+        <img class="sep" align="middle" src="./images/separator.gif" />
         <router-link to="/help">?</router-link>
       </div>
     </div>
@@ -52,7 +52,7 @@
           categoryId: 'FISH'
         }  
       }"><img src="./images/sm_fish.gif" /></router-link>
-      <img src="./images/separator.gif" />
+      <img class="sep" src="./images/separator.gif" />
 
       <router-link :to="{
         name: 'category',
@@ -60,7 +60,7 @@
           categoryId: 'DOGS'
         }  
       }"><img src="./images/sm_dogs.gif" /></router-link>
-      <img src="./images/separator.gif" />
+      <img class="sep" src="./images/separator.gif" />
 
       <router-link :to="{
         name: 'category',
@@ -68,7 +68,7 @@
           categoryId: 'CATS'
         }  
       }"><img src="./images/sm_cats.gif" /></router-link>
-      <img src="./images/separator.gif" />
+      <img class="sep" src="./images/separator.gif" />
 
       <router-link :to="{
         name: 'category',
@@ -76,14 +76,14 @@
           categoryId: 'REPTILES'
         }  
       }"><img src="./images/sm_reptiles.gif" /></router-link>
-      <img src="./images/separator.gif" />
+      <img class="sep" src="./images/separator.gif" />
 
       <router-link :to="{
         name: 'category',
         params: {
           categoryId: 'BIRDS'
         }  
-      }"><img src="./images/sm_birds.gif" /></router-link>
+      }"><img class="sep" src="./images/sm_birds.gif" /></router-link>
     </div>
 
   </div>
@@ -127,5 +127,5 @@ export default {
 </script>
 
 <style scoped>
-
+  
 </style>

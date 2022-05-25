@@ -25,6 +25,10 @@ export default {
 </script>
 
 <style>
+  .sep{
+    margin-left: 5px;
+    margin-right: 5px;
+  }
   body {
     margin: 0ex 10ex 0ex 10ex;
     padding: 0ex;
@@ -198,6 +202,9 @@ export default {
     border-color: #aaa;
     background-color: #666;
     color: #eaac00;
+    font-size: 100%;
+    width: 140px;
+    margin-right: 2px;
   }
 
   #QuickLinks {

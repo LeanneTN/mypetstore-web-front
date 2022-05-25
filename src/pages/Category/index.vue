@@ -35,14 +35,15 @@
 import { mapState } from 'vuex';
 export default {
   name:'Category',
-  mounted() {
-    //组件挂载完毕，通知Vuex发送请求，获取数据，存储到store中
-    this.$store.dispatch('productList', this.categoryId);
+  data(){
+    return{
+      productList: [],
+    }
   },
   computed:{
     ...mapState({
       //注入state参数
-      productList: state=>state.catalog.productList
+      categoryList: state=>state.catalog.categoryList
     }),
 
     categoryId(){
@@ -51,9 +52,13 @@ export default {
   },
   watch:{
     categoryId:{
-      immediate: false,
+      immediate: true,
       handler(newVal, oldVal){
-        this.$store.dispatch('productList', newVal);
+        for(let category of this.categoryList){
+        if(category.categoryId == newVal)
+          this.productList = category.productVOList;
+        }
+        console.log(this.productList);
       }
     }
   }
