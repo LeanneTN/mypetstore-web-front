@@ -86,13 +86,99 @@ export const reqUsername = (username)=>{
 }
 
 //更新账号信息
-export const reqUpdateAccount = ()=>{
+export const reqUpdateAccount = (account)=>{
   //发请求：axios发请求返回Promise对象
   return requests({
     url: '/user/update_account',
     method: 'post',
+    params: {
+      firstName: account.firstName,
+      lastName: account.lastName,
+      email: account.email,
+      phone: account.phone,
+      address1: account.address1,
+      address2: account.address2,
+      city: account.city,
+      state: account.state,
+      zip: account.zip,
+      country: account.country,
+      languagePreference: account.languagePreference,
+      favouriteCategoryId: account.favouriteCategoryId,
+      listOption: account.listOption,
+      bannerOption: account.bannerOption
+    }
   })
 }
+
+//下线
+export const reqSignOut = ()=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: '/user/sign_out',
+    method: 'post',
+  })
+}
+
+//获取已登录账号的cart
+export const reqCart = ()=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: '/cart/myCart',
+    method: 'get',
+  })
+}
+
+//向购物车添加商品
+export const reqAddItem = (itemId)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: '/cart/myCart',
+    method: 'post',
+    params: {
+      itemId,
+    },
+  })
+}
+
+//更改cartItem的checked
+export const reqChangeChecked = (itemId, checked)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: '/cart/myCart/changeChecked',
+    method: 'post',
+    params: {
+      itemId,
+      checked
+    },
+  })
+}
+
+//更新购物车商品数量
+export const reqUpdateItemQuantity = (itemId, quantity)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: '/cart/myCart/cartItems',
+    method: 'post',
+    params: {
+      itemId,
+      quantity
+    },
+  })
+}
+
+//删除购物车中的某件商品
+export const reqRemoveItem = (itemId)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: '/cart/myCart/cartItems',
+    method: 'delete',
+    params: {
+      itemId,
+    },
+  })
+}
+
+
 
 //获取categoryList
 export const reqCategoryList = ()=>{
@@ -129,6 +215,15 @@ export const reqItem = (itemId)=>{
   //发请求：axios发请求返回Promise对象
   return requests({
     url: `/catalog/items/${itemId}`,
+    method: 'get',
+  })
+}
+
+//获取已登录账号的orderList
+export const reqOrderList = ()=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: `/order/orders/myOrders`,
     method: 'get',
   })
 }

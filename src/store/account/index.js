@@ -7,20 +7,23 @@ const state = {
 
 const mutations = {
   LOGINACCOUNT(state, loginAccount){
-    console.log('mutation被调用');
     state.loginAccount = loginAccount;
-  }
+  },
 };
 
 const actions = {
   //向服务器请求已登录的账号
   async loginAccount(context){
     let result = await reqLoginAccount();
-    console.log(result);
     if(result.status == 0){
       context.commit('LOGINACCOUNT',result.data);
     }
   },
+
+  //更改账号信息
+  changeAccountInf(context, loginAccount){
+    context.commit('LOGINACCOUNT', loginAccount)
+  }
 };
 
 const getters = {};

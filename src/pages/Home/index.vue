@@ -53,7 +53,7 @@
             <div id="MainImage">
                 <div id="MainImageContent">
                     <map name="estoremap">
-                        <area alt="Birds" coords="72,2,280,250" @click="goCategory('Birds')" shape="rect"/>
+                        <area alt="Birds" coords="72,2,280,250" @click="goCategory('BIRDS')" shape="rect"/>
                         <area alt="Fish" coords="2,180,72,250" @click="goCategory('FISH')" shape="rect" />
                         <area alt="Dogs" coords="60,250,130,320" @click="goCategory('DOGS')" shape="rect" />
                         <area alt="Reptiles" coords="140,270,210,340" @click="goCategory('REPTILES')" shape="rect" />
@@ -72,6 +72,9 @@
 export default {
   name:'Home',
   computed:{
+  },
+  mounted(){
+    console.log('这是Home')
   },
   methods: {
     goCategory(categoryId){
