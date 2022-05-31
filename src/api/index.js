@@ -119,6 +119,46 @@ export const reqSignOut = ()=>{
   })
 }
 
+//获取categoryList
+export const reqCategoryList = ()=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: '/catalog/all_category',
+    method: 'get',
+  })
+}
+
+//根据categoryId获取productList
+export const reqProductListById = (categoryId)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: `/catalog/categories/${categoryId}/products`,
+    method: 'get',
+  })
+}
+
+//根据productId获取itemList
+export const reqItemListById = (productId)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: `/catalog/products/${productId}`,
+    method: 'get',
+    params: {
+      productId,
+    }
+  })
+}
+
+//根据itemId获取item
+export const reqItem = (itemId)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: `/catalog/items/${itemId}`,
+    method: 'get',
+  })
+}
+
+//以下为购物车相关的部分
 //获取已登录账号的cart
 export const reqCart = ()=>{
   //发请求：axios发请求返回Promise对象
@@ -178,52 +218,71 @@ export const reqRemoveItem = (itemId)=>{
   })
 }
 
-
-
-//获取categoryList
-export const reqCategoryList = ()=>{
+//结算并返回被选中的商品
+export const reqCheckOut = ()=>{
   //发请求：axios发请求返回Promise对象
   return requests({
-    url: '/catalog/all_category',
-    method: 'get',
+    url: '/cart/myCart/checkAll',
+    method: 'post',
   })
 }
 
-//根据categoryId获取productList
-export const reqProductListById = (categoryId)=>{
-  //发请求：axios发请求返回Promise对象
-  return requests({
-    url: `/catalog/categories/${categoryId}/products`,
-    method: 'get',
-  })
-}
 
-//根据productId获取itemList
-export const reqItemListById = (productId)=>{
-  //发请求：axios发请求返回Promise对象
-  return requests({
-    url: `/catalog/products/${productId}`,
-    method: 'get',
-    params: {
-      productId,
-    }
-  })
-}
-
-//根据itemId获取item
-export const reqItem = (itemId)=>{
-  //发请求：axios发请求返回Promise对象
-  return requests({
-    url: `/catalog/items/${itemId}`,
-    method: 'get',
-  })
-}
-
+//以下为与订单相关的部分
 //获取已登录账号的orderList
 export const reqOrderList = ()=>{
   //发请求：axios发请求返回Promise对象
   return requests({
     url: `/order/orders/myOrders`,
+    method: 'get',
+  })
+}
+
+//生成订单并清空购物车中被选中的商品
+export const reqNewOrder = (expiryDate,billToFirstName,creditCard, billToLastName,billAddress1,billAddress2,billCity,billState,billZip,billCountry,cardType,shippingAddressRequired,shipToFirstName,shipToLastName,shipAddress1,shipAddress2,shipCity,shipState,shipZip,shipCountry)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: `/order/orders/newOrder`,
+    method: 'post',
+    params: {
+      expiryDate,
+      billToFirstName,
+      creditCard,
+      billToLastName,
+      billAddress1,
+      billAddress2,
+      billCity,
+      billState,
+      billZip,
+      billCountry,
+      cardType,
+      shippingAddressRequired,
+      shipToFirstName,
+      shipToLastName,
+      shipAddress1,
+      shipAddress2,
+      shipCity,
+      shipState,
+      shipZip,
+      shipCountry
+    }
+  })
+}
+
+//根据orderId获取order
+export const reqOrderById = (orderId)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: `/order/orders/${orderId}`,
+    method: 'get',
+  })
+}
+
+//根据订单号获取该订单购买的商品
+export const reqOrderItemList = (orderId)=>{
+  //发请求：axios发请求返回Promise对象
+  return requests({
+    url: `/order/orders/${orderId}/items`,
     method: 'get',
   })
 }

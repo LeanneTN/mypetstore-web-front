@@ -37,24 +37,30 @@
                 <span class="error-msg">{{codeMsg}}</span>
               </div>
 
-              <button @click="logInByPassword" class="btn">登&nbsp;&nbsp;录</button>
+              <button @click="loginByPassword" class="btn">登&nbsp;&nbsp;录</button>
             </form>
 
             <form v-show="!showAccountForm" @submit.prevent>
               <div class="input-text clearFix">
                 <span class="user icon"></span>
-                <input id="phonenumber" type="text" placeholder="手机号">
+                <input v-model="phone" type="text" placeholder="手机号">
                 <span class="error-msg">{{phoneMsg}}</span>
               </div>
 
               <div class="input-text clearFix">
                 <span class="icon"></span>
-                <input id="phonecode" type="text" class="code" placeholder="验证码">
-                <input class="sendPhoneCode" type="button" value="获取验证码" id="sendBtn"/>
+                <input v-model="phoneCode" type="text" class="code" placeholder="验证码">
+                <input 
+                  ref="sendBtn" 
+                  class="sendPhoneCode" 
+                  type="button"
+                  value="获取验证码"
+                  @click="sendPhoneCode"
+                />
                 <span class="error-msg">{{phoneCodeMsg}}</span>
               </div>
 
-              <button class="btn" id="submitPhone">登&nbsp;&nbsp;录</button>
+              <button class="btn" @click="loginByPhone">登&nbsp;&nbsp;录</button>
             </form>
 
             <div class="call clearFix">
@@ -68,9 +74,8 @@
 </template>
 
 <script>
-  import { reqLoginByAccount } from "@/api";
+  import { reqLoginByAccount, reqLoginByPhone, reqPhoneCode } from "@/api";
   import _util from "@/utils/util";
-  import { mapState } from 'vuex';
   export default {
     name: 'Login',
     data() {
@@ -90,12 +95,6 @@
         phoneCodeMsg : '',
       }
     },
-    computed:{
-
-    },
-    mounted() {
-
-    },
     methods: {
       //改变登录方式
       changeMode(){
@@ -108,7 +107,7 @@
       },
 
       //账号密码登录
-      async logInByPassword(){
+      async loginByPassword(){
         let formData={
           username : this.username,
           password : this.password,
@@ -124,26 +123,24 @@
         }
         //初步验证通过，通知Vuex向服务器发送请求
         else{ 
-          let result = await reqLoginByAccount(this.username, this.password, this.code);   
+          let response = await reqLoginByAccount(this.username, this.password, this.code);   
           //登录成功
-          if(result.status == 0){
+          if(response.status == 0){
             //向服务器发送请求，获取该用户的cart、order和account，保存到store中，以便后续使用
             this.$store.dispatch('loginAccount'); 
             this.$store.dispatch('loginCart'); 
             this.$store.dispatch('orderList');
             //进行页面跳转
             this.$router.push({name:'home'});
-          }else if(result.status == 1){
+          }else if(response.status == 1){
             this.passwordMsg = '用户名或密码错误！';
             this.codeMsg = ''
             this.getCaptcha();
-          }else if(result.status == 101){
+          }else if(response.status == 101){
             this.passwordMsg = '';
             this.codeMsg = '验证码错误！';
             this.getCaptcha();
           }
-
-          
         }
       },
 
@@ -172,6 +169,60 @@
         return result;
       },
 
+      //发送手机验证码
+      async sendPhoneCode(){
+        //手机号为空
+        if(!_util.checkValue('require',this.phone)){
+          this.phoneMsg = '手机号不能为空';
+        }
+        //开始请求验证码
+        else{
+          this.phoneMsg = '';
+          let response = await reqPhoneCode(this.phone);
+          if(response.status == 0){
+            //成功获取验证码
+            this.timer();
+          }else if(response.status == 101){
+            this.phoneCodeMsg = '验证码发送失败，手机号的格式错误！';
+          }
+        }
+      },
+
+      //手机验证码登录
+      async loginByPhone(){
+        let formData={
+          phone : this.phone,
+          phoneCode : this.phoneCode,
+        };
+        //对表单数据进行判断
+        let result = this.checkPhoneFormData(formData);
+        //此时初次验证未通过
+        if(!result.status){ 
+          this.phoneMsg = result.phoneMsg;
+          this.phoneCodeMsg = result.phoneCodeMsg;
+        }
+        //初步验证通过，开始向服务器发送请求
+        else{    
+          let response = await reqLoginByPhone(this.phone, this.phoneCode);
+          //登录成功
+          if(response.status == 0){
+            //向服务器发送请求，获取该用户的cart、order和account，保存到store中，以便后续使用
+            this.$store.dispatch('loginAccount'); 
+            this.$store.dispatch('loginCart'); 
+            this.$store.dispatch('orderList');
+            //进行页面跳转
+            this.$router.push({name:'home'});
+          }else if(response.status == 1){
+            this.phoneMsg = '用户不存在！';
+            this.phoneCodeMsg = '';
+            this.phoneCode = '';
+          }else if(response.status == 101){
+            this.phoneMsg = '';
+            this.phoneCodeMsg = '验证码错误！';
+          }
+        }
+      },
+
       //检验手机登录表单：
       checkPhoneFormData:function (formData) {
         let result={
@@ -179,7 +230,7 @@
           phoneMsg:' ',
           phoneCodeMsg: ' '
         };
-        if(!_util.checkValue('require',formData.phoneNumber)){
+        if(!_util.checkValue('require',formData.phone)){
           result.phoneMsg='手机号不能为空';
           return result;
         }
@@ -191,6 +242,25 @@
         result.status=true;
         return result;
       },
+
+      //点击获取验证码之后的倒计时
+      timer() {
+        if(this.wait == 0){
+          this.$refs.sendBtn.disabled = true;
+          this.$refs.sendBtn.style.borderColor="1e9fff";
+          this.$refs.sendBtn.style.background="1e9fff";
+          this.$refs.sendBtn.style.cursor="pointer";
+          this.$refs.sendBtn.value = '获取验证码';
+        }else{
+          this.$refs.sendBtn.disabled = true;
+          this.$refs.sendBtn.style.borderColor="fbfbfb";
+          this.$refs.sendBtn.style.background="#ccc";
+          this.$refs.sendBtn.style.cursor="not-allowed";
+          this.$refs.sendBtn.value = `${this.wait}秒后重发`;
+          this.wait--;
+          setTimeout(() => {this.timer()}, 1000);
+        }
+    }
     },
   }
 </script>
@@ -311,6 +381,7 @@
               font-family: 微软雅黑;
               border: 1px solid #e1251b;
               color: #fff;
+              cursor: pointer;
             }
 
             input {

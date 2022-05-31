@@ -101,7 +101,7 @@
                 <i class="summoney">${{subTotal}}</i>
               </div>
               <div class="sumbtn">
-                <a id="sum-btn">结算</a>
+                <a @click="checkOut">结算</a>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { reqChangeChecked, reqUpdateItemQuantity, reqRemoveItem } from "@/api";
+import { reqCheckOut, reqChangeChecked, reqUpdateItemQuantity, reqRemoveItem } from "@/api";
 export default {
   name:'Cart',
   data(){
@@ -152,9 +152,25 @@ export default {
     ...mapState({
       //注入state参数
       cart: state=>state.cart.response.data,
+      cartItemList: state=>state.cart.cartItemList,
     }),
   },
   methods: {
+    //结算
+    checkOut(){
+      this.$store.dispatch('checkOut');
+      if(this.cartItemList == null){
+        alert('未知错误！');
+      }
+      else if(this.cartItemList.status == 0){
+        this.$router.push({name: 'checkOut'});
+      }else if(this.cartItemList.status == 1){
+        alert('购物车中没有商品被选中！');
+      }else if(this.cartItemList.status == 10){
+        this.$router.push({name: 'login'});
+      }
+    },
+
     //为checekbox绑定单击事件
     async checkedChange(cartItem){
       cartItem.checked = !cartItem.checked;

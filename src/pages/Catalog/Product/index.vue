@@ -1,7 +1,12 @@
 <template>
   <div id="Content">
     <div id="BackLink">
-      <router-link to="/main">Return to Main Menu</router-link>
+      <router-link :to="{
+        name: 'category',
+        params: {
+          categoryId: categoryList[0].categoryId
+        }  
+      }">Return to {{itemList[0].categoryId}}</router-link>
     </div>
 
     <div id="Catalog">

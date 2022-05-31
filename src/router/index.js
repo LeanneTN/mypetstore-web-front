@@ -85,7 +85,7 @@ export default new VueRouter({
     },
 
     {
-      path:'/order/confirmOrder',
+      path:'/order/confirmOrder/:orderId',
       component: ConfirmOrder,
       name: 'confrimOrder'
     },
@@ -100,7 +100,7 @@ export default new VueRouter({
       name:'newOrderForm'
     },
     {
-      path:'/order/myOrders',
+      path:'/order/viewOrder/:orderId',
       component:ViewOrder,
       name:'viewOrder'
     },

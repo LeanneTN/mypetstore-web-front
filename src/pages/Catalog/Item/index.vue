@@ -1,47 +1,56 @@
 <template>
-    <div id="Content">
-        <div id="BackLink"></div>
-
-        <div id="Catalog">
-
-            <table>
-                <tr>
-                    <td>
-                        <img :src="item.image">
-                        <p>{{item.description}}</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>{{item.itemId}}</b></td>
-                </tr>
-                <tr>
-                    <td>
-                        <b> <font size="4">{{item.attribute1}}</font> </b>
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{item.name}}</td>
-                </tr>
-                <tr>
-                    <td>{{item.quantity}}</td>
-                </tr>
-                <tr>
-                    <td>{{item.listPrice}}</td>
-                </tr>
-
-                <tr>
-                    <td>
-                        <a class="Button" @click="addToCart(item.itemId)">Add to Cart</a>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
+  <div id="Content">
+    <div id="BackLink">
+      <router-link :to="{
+        name: 'product',
+        params: {
+          productId: item.productId
+        }  
+      }">Return to {{item.productId}}</router-link>
     </div>
+
+    <div id="Catalog">
+      <h2>&nbsp;</h2>
+
+      <table>
+        <tr>
+          <td>
+            <img :src="item.image">
+            <p>{{item.description}}</p>
+          </td>
+        </tr>
+        <tr>
+          <td><b>{{item.itemId}}</b></td>
+        </tr>
+        <tr>
+          <td>
+            <b> <font size="4">{{item.attribute1}}</font> </b>
+          </td>
+        </tr>
+        <tr>
+          <td>{{item.name}}</td>
+        </tr>
+        <tr>
+          <td>{{item.quantity}}</td>
+        </tr>
+        <tr>
+          <td>{{item.listPrice}}</td>
+        </tr>
+
+        <tr>
+          <td>
+            <a class="Button" @click="addToCart(item.itemId)">Add to Cart</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import { reqAddItem } from "@/api";
 export default {
   name:'Item',
   data(){
@@ -51,6 +60,7 @@ export default {
   },
   methods: {
     async addToCart(itemId){
+      console.log(itemId)
       let result = await reqAddItem(itemId);
       if(result.status==0){
         //通知vuex获取最新的cart
@@ -96,5 +106,7 @@ export default {
 </script>
 
 <style>
-  
+  a{
+    cursor: pointer;
+  }
 </style>

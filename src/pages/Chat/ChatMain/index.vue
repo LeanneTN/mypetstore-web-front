@@ -260,6 +260,7 @@ export default {
       IMUI.appendMessage(message, true);
     },
 
+    //更换查看的聊天记录框
     handleChangeContact(contact, instance) {
       console.log("Event:change-contact");
       instance.updateContact({
@@ -268,13 +269,17 @@ export default {
       });
       instance.closeDrawer();
     },
-    
+
+    //进行发送消息，后期可以与websocket结合
     handleSend(message, next, file) {
       console.log(message, next, file);
+      //这里单纯为了营造一个延迟，后期可以去掉
       setTimeout(() => {
         next();
-      }, 1000);
+      }, 500);
     },
+
+    //此函数用于生成若干消息，后期可以从服务器获取
     handlePullMessages(contact, next, instance) {
       const otheruser = {
         id: contact.id,
@@ -305,10 +310,11 @@ export default {
         next(messages, isEnd);
       }, 500);
     },
+
+    //更换菜单
     handleChangeMenu() {
       console.log("Event:change-menu");
     },
-    openCustomContainer() {},
   },
 };
 </script>
