@@ -21,8 +21,6 @@ Vue.use(Button);
 //命名并设置全局变量
 Vue.prototype.$global = global
 
-
-
 Vue.use(LemonIMUI);
 
 new Vue({

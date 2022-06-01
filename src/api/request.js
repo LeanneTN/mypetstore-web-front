@@ -5,6 +5,8 @@ import nprogress from "nprogress";
 //引入进度条的样式
 import 'nprogress/nprogress.css'
 
+axios.defaults.withCredentials = true;
+
 //利用axios对象的create方法，创建axios实例
 //request就是axios，只不过稍微配置一下
 const requests = axios.create({
