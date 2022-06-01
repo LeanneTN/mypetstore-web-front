@@ -12,6 +12,7 @@ import Category from '@/pages/Catalog/Category';
 import Product from '@/pages/Catalog/Product';
 import Item from '@/pages/Catalog/Item';
 import Search from '@/pages/Catalog/Search';
+import Help from '@/pages/Catalog/Help';
 
 import Login from '@/pages/Account/Login';
 import Register from '@/pages/Account/Register';
@@ -56,6 +57,11 @@ export default new VueRouter({
       component:Search,
       name:'search'
     },
+    {
+      path:'/help',
+      component: Help,
+      name: 'help'
+    },
 
     {
       path:'/login',
@@ -87,7 +93,7 @@ export default new VueRouter({
     {
       path:'/order/confirmOrder/:orderId',
       component: ConfirmOrder,
-      name: 'confrimOrder'
+      name: 'confirmOrder'
     },
     {
       path:'/order/myOrders',

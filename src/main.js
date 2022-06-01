@@ -8,15 +8,15 @@ import router from '@/router'
 //引入仓库
 import store from '@/store'
 //引入ui组件
-import {Dialog, Row, Input, Col, Avatar} from 'element-ui';
+import {Autocomplete, Row, Col, Button} from 'element-ui';
 
 Vue.config.productionTip = false;
 
-Vue.use(Dialog);
+Vue.use(Autocomplete);
 Vue.use(Row);
-Vue.use(Input);
 Vue.use(Col);
-Vue.use(Avatar);
+Vue.use(Button);
+
 
 Vue.use(LemonIMUI);
 

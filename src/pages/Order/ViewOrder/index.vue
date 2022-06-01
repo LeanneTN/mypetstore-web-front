@@ -4,10 +4,15 @@
       <a href="../catalog/catalog-main.html">Return to Main Menu</a>
     </div>
 
+    <br/>
+    <br/>
+
     <div id="Catalog">
       <table>
         <tr>
-            <th align="center" colspan="2" id="orderHeader"></th>
+            <th align="center" colspan="2">
+              #{{order.orderId}} —— {{renderTime(order.orderDate)}}
+            </th>
         </tr>
         <tr>
           <th colspan="2">Payment Details</th>
@@ -179,8 +184,13 @@ export default {
     }
   },
   methods: {
+    //渲染时间
+    renderTime: function(date) {
+        var dates = new Date(date).toJSON();
+        return new Date(+new Date(dates) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '') 
+    },
     pay(){
-
+      window.location.href = `http://localhost:8088/pay/${this.order.totalPrice}/${this.order.orderId}/${this.order.billToFirstName}/${this.order.billAddress1}`;
     }
   },
 }

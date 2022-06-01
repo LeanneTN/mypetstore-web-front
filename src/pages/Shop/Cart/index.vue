@@ -1,5 +1,5 @@
 <template>
-    <div id="Content">
+  <div id="Content">
     <div id="BackLink">
       <router-link to="/main">Return to Main Menu</router-link>
     </div>
@@ -20,6 +20,9 @@
           </div>
 
           <div class="cart-body">
+            <b style="font-size:24px;" v-show="cartItemList.length==0 && show">
+              Your cart is empty.
+            </b>
             <ul class="cart-list" v-for="cartItem in cartItemList" :key="cartItem.itemId">
               <template v-if="cartItem.quantity">
                 <li class="cart-list-con0">
@@ -113,7 +116,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { reqCheckOut, reqChangeChecked, reqUpdateItemQuantity, reqRemoveItem } from "@/api";
+import { reqCart, reqChangeChecked, reqUpdateItemQuantity, reqRemoveItem } from "@/api";
 export default {
   name:'Cart',
   data(){
@@ -122,53 +125,41 @@ export default {
       subTotal: 0,
       count: 0,
       checkAll: true,
+      show: false,
     }
   },
-  created(){
-    console.log(this.cart);
+  async created() {
+    //向服务器发送请求，获取购物车
+    let res = await reqCart();
 
-    console.log('这是Cart');
-    this.cartItemList = this.cart.itemList;
-    this.subTotal = this.cart.subTotal;
-    for(let cartItem of this.cartItemList){
-      if(cartItem.checked){
-        this.count++;
-      }else{
-        this.checkAll = false;
-      }   
+    console.log(res);
+    if(res.status == 0){
+      this.cartItemList = res.data.itemList;
+
+      this.subTotal = res.data.subTotal;
+      for(let cartItem of this.cartItemList){
+        if(cartItem.checked){
+          this.count++;
+        }else{
+          this.checkAll = false;
+        }   
+      }
+    }else if(res.status == 10){
+      this.$store.dispatch('loginAccount');
+      this.$router.push({name: 'login'});
     }
 
-    console.log(this.cartItemList);
-    console.log(this.subTotal);
-    console.log(this.count);
-    console.log(this.checkAll);
-
-  },
-  beforeDestroy(){
-    this.$store.dispatch('loginCart');
-  },
-  computed: {
-    //获取购物车
-    ...mapState({
-      //注入state参数
-      cart: state=>state.cart.response.data,
-      cartItemList: state=>state.cart.cartItemList,
-    }),
+    this.show = true;
   },
   methods: {
     //结算
     checkOut(){
-      this.$store.dispatch('checkOut');
-      if(this.cartItemList == null){
-        alert('未知错误！');
-      }
-      else if(this.cartItemList.status == 0){
-        this.$router.push({name: 'checkOut'});
-      }else if(this.cartItemList.status == 1){
+      //首先检查是否有商品被选中，如果没有就不能结算
+      if(this.count == 0)
         alert('购物车中没有商品被选中！');
-      }else if(this.cartItemList.status == 10){
-        this.$router.push({name: 'login'});
-      }
+      else
+        //否则直接进行页面的跳转
+        this.$router.push({name: 'checkout'});
     },
 
     //为checekbox绑定单击事件

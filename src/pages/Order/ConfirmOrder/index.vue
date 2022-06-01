@@ -113,7 +113,7 @@ export default {
       return this.$route.params.orderId;
     },
   },
-  async mounted(){
+  async created(){
     //向服务器发送请求，获取订单的信息
     let res = await reqOrderById(this.orderId);
     if(res.status == 0){
@@ -124,53 +124,16 @@ export default {
       alert('您查询的订单不存在！');
     }
   },
-  method:{
+  methods: {
     viewOrder(){
       this.$router.push({
-        name: 'ViewOrder',
+        name: 'viewOrder',
         params: {
           orderId: this.orderId
         }  
       })
     }
   },
-
-
-
-    loadInfo:function(){
-        let orderId=1002;
-        _order_service.getOrderById(
-            orderId,
-            function({data:res}){
-                // <b id="time" th:text="${#dates.format(session.order.orderDate, 'yyyy/MM/dd hh:mm:ss')}"></b>
-                //开始为界面赋值
-                $('#time').text(res.orderDate);
-                $('#firstName').text(res.billToFirstName);
-                $('#lastName').text(res.billToLastName);
-                $('#address1').text(res.billAddress1);
-                $('#address2').text(res.billAddress2);
-                $('#city').text(res.billCity);
-                $('#state').text(res.billState);
-                $('#zip').text(res.billZip);
-                $('#billCountry').text(res.billCountry);
-
-
-                $('#sFirstName').text(res.shipToFirstName);
-                $('#sLastName').text(res.shipToLastName);
-                $('#sAddress1').text(res.shipAddress1);
-                $('#sAddress2').text(res.shipAddress2);
-                $('#sCity').text(res.shipCity);
-                $('#sState').text(res.shipState);
-                $('#sZip').text(res.shipZip);
-                $('#sCountry').text(res.shipZip);
-
-            },
-            function(errMsg){
-                alert(errMsg.msg);
-            }
-        )
-    },
-
 }
 </script>
 

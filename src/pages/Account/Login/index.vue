@@ -126,9 +126,8 @@
           let response = await reqLoginByAccount(this.username, this.password, this.code);   
           //登录成功
           if(response.status == 0){
-            //向服务器发送请求，获取该用户的cart、order和account，保存到store中，以便后续使用
-            this.$store.dispatch('loginAccount'); 
-            this.$store.dispatch('loginCart'); 
+            //向服务器发送请求，获取该用户的order和account，保存到store中，以便后续使用
+            this.$store.dispatch('loginAccount');  
             this.$store.dispatch('orderList');
             //进行页面跳转
             this.$router.push({name:'home'});

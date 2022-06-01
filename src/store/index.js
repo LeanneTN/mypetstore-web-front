@@ -6,7 +6,6 @@ Vue.use(Vuex);
 //引入小仓库
 import catalog from './catalog'
 import account from './account';
-import cart from './cart';
 import order from './order'
 
 //对外暴露Store类的一个实例
@@ -15,7 +14,6 @@ export default new Vuex.Store({
   modules:{
     catalog,
     account,
-    cart,
     order
   }
 });

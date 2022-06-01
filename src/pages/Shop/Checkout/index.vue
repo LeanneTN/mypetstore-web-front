@@ -38,7 +38,7 @@
               </li>
 
               <li class="cart-list-con3">
-                <span class="price">${{cartitem.listPrice}}</span>
+                <span class="price">${{cartItem.listPrice}}</span>
               </li>
 
               <li class="cart-list-con3">
@@ -51,7 +51,7 @@
             <div class="money-box">
               <div class="sumprice">
                 <em>总价（不含运费） ：</em>
-                <i class="summoney">{{sum}}</i>
+                <i class="summoney">${{sum}}</i>
               </div>
               <div class="sumbtn">
                 <a class="sum-btn" @click="newOrderForm">继续</a>
@@ -65,27 +65,31 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { reqCheckOut } from "@/api";
 export default {
   name:'CheckOut',
   data() {
     return {
+      cartItemList: [],
       sum: 0,
     }
   },
-  computed: {
-    //获取购物车
-    ...mapState({
-      //注入state参数
-      cartItemList: state=>state.cart.cartItemList.data,
-    }),
-  },
-  mounted(){
-    let sum = 0;
-    for(let cartItem of this.cartItemList){
-      sum += cartItem.totalPrice;
+  async mounted(){
+    let res = await reqCheckOut();
+    if(res.status == 0){
+      this.cartItemList = res.data;
+      let sum = 0;
+      for(let cartItem of this.cartItemList){
+        sum += cartItem.totalPrice;
+      }
+      this.sum = sum;
+    }else if(res.status == 1){
+      alert('购物车中没有商品被选中！');
+    }else if(res.status == 10){
+      this.$router.push({name: 'login'});
+    }else{
+      alert('未知错误！');
     }
-    this.sum = sum;
   },
   methods:{
     newOrderForm(){

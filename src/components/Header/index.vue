@@ -39,14 +39,22 @@
     </div>
 
     <div id="Search">
-      <div id="SearchContent">
-        <form action="###" method="post">
-          <input v-model="keyword" type="text" name="keyword" size="14" id="key" class="inputtable"/>
-          <button type="submit" name="searchProducts" @click="goSearch">Search</button>
-        </form>
-      </div>
+      <el-row class="demo-autocomplete">
+        <el-col :span="24">
+          <el-autocomplete
+            class="inline-input"
+            v-model="keyword"
+            :fetch-suggestions="querySearch"
+            placeholder="请输入内容"
+            :trigger-on-focus="false"
+            @select="handleSelect"
+            size="small"
+          ></el-autocomplete>
+          <el-button type="warning" icon="el-icon-search" size="small" @click="goSearch">搜索</el-button>
+        </el-col>
+        
+      </el-row>
     </div>
-
 
     <div id="QuickLinks">
       <router-link :to="{
@@ -100,33 +108,63 @@ export default {
   data() {
     return {
       keyword: '',
+      productList: [],
     }
   },
+  mounted() {
+    this.loadAll();
+  },
   methods: {
+    //以下函数用于自动补全
+    querySearch(queryString, cb) {
+      var productList = this.productList;
+      var products = queryString ? productList.filter(this.createFilter(queryString)) : productList;
+      let results = [];
+      for(let product of products){
+        let tmp = {};
+        tmp.value = product.name;
+        tmp.productId = product.productId;
+        results.push(tmp);
+      }
+      cb(results);
+    },
+    createFilter(queryString) {
+      return (product) => {
+        return (product.name.toLowerCase().indexOf(queryString.toLowerCase()) != -1);
+      };
+    },
+    loadAll() {
+      for(let category of this.categoryList){
+        for(let product of category.productVOList){
+          this.productList.push(product);
+        }
+      }
+    },
+    handleSelect(item) {
+      this.goSearch();
+      this.keyword = item.value;
+    },
+
     //查看购物车
     async goCart(){
-      //已经登录
-      if(this.cart.status == 0){
-        //首先通知vuex，获取该用户的cart
+      if(this.loginAccount == null)
         this.$router.push({name:'cart'});
-      }else if(this.cart.status == 10){
-        //没有登录，跳往登录界面
+      else
         this.$router.push({name:'login'});
-      }
     },
 
     //搜索按钮的回调函数，需要向search路由进行跳转
     goSearch(){
         //如果有query参数
         if(this.$route.query){
-            let location = {
-                name:'search',
-                params:{
-                    keyword: this.keyword || undefined
-                },
-                query: this.$route.query
-            }
-            this.$router.push(location)
+          let location = {
+            name:'search',
+            params:{
+                keyword: this.keyword || undefined
+            },
+            query: this.$route.query
+          }
+          this.$router.push(location);
         }
     },
 
@@ -143,14 +181,11 @@ export default {
       }
     }
   },
-  mounted() {
-    console.log(this.cart);
-  },
   computed:{
     ...mapState({
       //注入state参数
       loginAccount: state=>state.account.loginAccount,
-      cart: state=>state.cart.response,
+      categoryList: state=>state.catalog.categoryList,
     })
   },
 }

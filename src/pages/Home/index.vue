@@ -71,11 +71,6 @@
 <script>
 export default {
   name:'Home',
-  computed:{
-  },
-  mounted(){
-    console.log('这是Home')
-  },
   methods: {
     goCategory(categoryId){
       this.$router.push({name: 'category', params: { categoryId}});

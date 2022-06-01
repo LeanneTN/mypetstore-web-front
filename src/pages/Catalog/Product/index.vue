@@ -58,8 +58,6 @@ export default {
     async addToCart(itemId){
       let result = await reqAddItem(itemId);
       if(result.status==0){
-        //通知vuex获取最新的cart
-        this.$store.dispatch('loginCart');
         this.$router.push({name:'cart'});
       }else if(result.status==10){
         //跳转到登录界面

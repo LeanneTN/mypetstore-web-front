@@ -222,7 +222,7 @@ export const reqRemoveItem = (itemId)=>{
 export const reqCheckOut = ()=>{
   //发请求：axios发请求返回Promise对象
   return requests({
-    url: '/cart/myCart/checkAll',
+    url: '/cart/myCart/checkout',
     method: 'post',
   })
 }

@@ -31,7 +31,6 @@ export default {
     //组件挂载完毕，通知Vuex发送请求，获取数据，存储到store中
     this.$store.dispatch('categoryList');
     this.$store.dispatch('loginAccount');
-    this.$store.dispatch('loginCart');
   },
 }
 </script>
@@ -142,7 +141,7 @@ export default {
   }
 
   #Logo {
-    width: 33%;
+    width: 23%;
     height: 9ex;
     margin: 0ex 0ex 0ex 0ex;
     padding: 0ex 0ex 0ex 0ex;
@@ -161,7 +160,7 @@ export default {
   }
 
   #Menu {
-    width: 33%;
+    width: 50%;
     height: 9ex;
     margin: 0ex 0ex 0ex 0ex;
     padding: 0ex 0ex 0ex 0ex;
@@ -189,7 +188,7 @@ export default {
   }
 
   #Search {
-    width: 33%;
+    width: 26%;
     height: 9ex;
     margin: 0ex 0ex 0ex 0ex;
     padding: 0ex 0ex 0ex 0ex;
@@ -215,8 +214,8 @@ export default {
     background-color: #666;
     color: #eaac00;
     font-size: 100%;
-    width: 140px;
-    margin-right: 2px;
+    width: 160px;
+    margin-right: 4px;
   }
 
   #QuickLinks {

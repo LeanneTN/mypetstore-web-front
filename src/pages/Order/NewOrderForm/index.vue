@@ -14,7 +14,7 @@
           <tr>
             <td>Card Type:</td>
             <td>
-              <select v-model="cartType">
+              <select v-model="cardType">
                 <option selected="selected" value="Visa">Visa</option>
                 <option value="MasterCard">MasterCard</option>
                 <option value="American Express">American Express</option>
@@ -144,7 +144,7 @@ export default {
       billState: '',
       billZip: '',
       billCountry: '',
-      cardType: '',
+      cardType: 'Visa',
       shippingAddressRequired: false,
       shipToFirstName: '',
       shipToLastName: '',
@@ -187,10 +187,12 @@ export default {
     async newOrder(){
       let res = await reqNewOrder(this.expiryDate,this.billToFirstName,this.creditCard,this.billToLastName,this.billAddress1,this.billAddress2,this.billCity,this.billState,this.billZip,this.billCountry,this.cardType,this.shippingAddressRequired,this.shipToFirstName,this.shipToLastName,this.shipAddress1,this.shipAddress2,this.shipCity,this.shipState,this.shipZip,this.shipCountry)
       if(res.status == 0){
+        //一旦生成了订单，就要更新MyOrders和Cart
+        this.$store.dispatch('orderList');
         this.$router.push({
           name: 'confirmOrder',
           params: {
-            orderId: response.data.orderId
+            orderId: res.data.orderId
           }  
         })
       }else if(res.status == 10){
