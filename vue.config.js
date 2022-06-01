@@ -10,7 +10,7 @@ module.exports = defineConfig({
         '/api': {
           target: 'http://localhost:8088',
           //用于支持webSocket
-          ws: true,
+          ws: false,
           //请求时是否改变请求源（请求的发出者host）
           changeOrigin: true
         }

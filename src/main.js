@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import LemonIMUI from 'lemon-imui';
 import 'lemon-imui/dist/index.css';
+import global from './components/global.js'
 
 //引入路由
 import router from '@/router'
@@ -16,6 +17,10 @@ Vue.use(Autocomplete);
 Vue.use(Row);
 Vue.use(Col);
 Vue.use(Button);
+
+//命名并设置全局变量
+Vue.prototype.$global = global
+
 
 
 Vue.use(LemonIMUI);

@@ -1,10 +1,16 @@
 <template>
   <div id="Content">
+    <div style="height: 2px">
+      <span>
+        <hr color="black">
+        <hr color="black">
+      </span>
+    </div>
     <div class="imui-center">
       <lemon-imui
         :user="user"
-        width="100%"
         ref="IMUI"
+        width="100%"
         :contextmenu="contextmenu"
         :contact-contextmenu="contactContextmenu"
         :theme="theme"
@@ -34,7 +40,8 @@
 
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
+import { mapState } from 'vuex';
 import LemonMessageVoice from "./lemon-message-voice";
 import QQIMUI from "../qq";
 import EmojiData from "@/database/emoji";
@@ -44,42 +51,43 @@ Vue.component(QQIMUI.name, QQIMUI);
 const getTime = () => {
   return new Date().getTime();
 };
-const generateRandId = () => {
-  return Math.random()
-    .toString(36)
-    .substr(-8);
-};
-const generateRandWord = () => {
-  return Math.random()
-    .toString(36)
-    .substr(2);
-};
+// const generateRandId = () => {
+//   return Math.random()
+//     .toString(36)
+//     .substr(-8);
+// };
+// const generateRandWord = () => {
+//   return Math.random()
+//     .toString(36)
+//     .substr(2);
+// };
 //该函数用于生成随机的消息
-const generateMessage = (toContactId = "", fromUser) => {
-  if (!fromUser) {
-    fromUser = {
-      id: "system",
-      displayName: "系统测试",
-      avatar: "http://upload.qqbodys.com/allimg/1710/1035512943-0.jpg",
-    };
-  }
-  return {
-    id: generateRandId(), //消息的id
-    status: "succeed",  //消息的状态
-    type: "text", //消息的类型
-    sendTime: getTime(),  //消息的发送时间
-    content: generateRandWord(),  //生成随机的消息内容
-    toContactId,  //消息是发送给谁的
-    fromUser, //消息的来源是谁
-  };
-};
+// const generateMessage = (toContactId = "", fromUser) => {
+//   if (!fromUser) {
+//     fromUser = {
+//       id: "system",
+//       displayName: "系统测试",
+//       avatar: "http://upload.qqbodys.com/allimg/1710/1035512943-0.jpg",
+//     };
+//   }
+//   return {
+//     id: generateRandId(), //消息的id
+//     status: "succeed",  //消息的状态
+//     type: "text", //消息的类型
+//     sendTime: getTime(),  //消息的发送时间
+//     content: generateRandWord(),  //生成随机的消息内容
+//     toContactId,  //消息是发送给谁的
+//     fromUser, //消息的来源是谁
+//   };
+// };
 
 export default {
   name: "ChatMain",
   data() {
     return {
-      //这个属性没用
-      theme: "default",
+      //以下的属性没有用，但不要改
+      theme: "default", //主题
+      contextmenu: [],  //在聊天框右击鼠标的菜单选项
 
       //在群和好友界面鼠标右击时的选项菜单
       contactContextmenu: [
@@ -116,16 +124,26 @@ export default {
       hideMessageTime: true,
       
       //当前用户的信息，后期可以通过vuex获取
-      user: {
-        id: "1",
-        displayName: "June",
-        avatar: "",
-      },
+      user: {},
     };
+  },
+  computed:{
+    ...mapState({
+      //注入state参数
+      loginAccount: state=>state.account.loginAccount,
+    })
   },
   //挂载函数
   mounted() {
-    //contactData1~4是消息记录，后期也可以发送ajax请求获取
+    //首先初始化用户信息
+    this.user.id = this.loginAccount.username;
+    this.user.displayName = this.loginAccount.username;
+    this.user.avatar = '';
+
+    this.creatSocket();
+    this.eventMsg();
+
+    //contactData1~3是消息记录，后期也可以发送ajax请求获取
     const contactData1 = {
       id: "contact-1",
       displayName: "工作协作群",
@@ -136,7 +154,7 @@ export default {
       lastContent: "2",
     };
     const contactData2 = {
-      id: "contact-3",
+      id: "contact-2",
       displayName: "铁牛",
       avatar: "http://upload.qqbodys.com/img/weixin/20170803/jiq4nzrkrnd0e.jpg",
       index: "T",
@@ -145,11 +163,10 @@ export default {
       lastContent: "你好123",
     };
     const contactData3 = {
-      id: "contact-4",
+      id: "contact-3",
       displayName: "如花",
-      avatar:
-        "https://dss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4275424924,2201401076&fm=111&gp=0.jpg",
-      index: "",
+      avatar: "https://dss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4275424924,2201401076&fm=111&gp=0.jpg",
+      index: "R",
       unread: 1,
       lastSendTime: 3,
       lastContent: "吃饭了嘛",
@@ -157,19 +174,18 @@ export default {
 
     //获取聊天框这个元素
     const { IMUI } = this.$refs;
-    setTimeout(() => {
-      IMUI.changeContact("contact-1");
-    }, 500);
+    // setTimeout(() => {
+    //   IMUI.changeContact("contact-1");
+    // }, 500);
 
-    IMUI.setLastContentRender("event", message => {
-      return `[自定义通知内容]`;
-    });
+    // IMUI.setLastContentRender("event", message => {
+    //   return `[自定义通知内容]`;
+    // });
 
     let contactList = [
       { ...contactData1 },
       { ...contactData2 },
       { ...contactData3 },
-      //...Array(100).fill(contactData1)
     ];
 
     //初始化消息记录
@@ -219,8 +235,79 @@ export default {
     // SimpleIMUI.initContacts([contactData1]);
     // SimpleIMUI.initEmoji(EmojiData);
     // SimpleIMUI.changeContact(contactData1.id);
+
+
+    // //以下为websocket的代码
+    // let ws = new WebSocket('ws://localhost:8088/api/chat');
+    // //给ws绑定事件
+    // ws.onopen = function(){
+    //   //建立连接之后做的工作
+    // }
+
+    // //接收到服务端推送的消息后触发
+    // ws.onmessage = function(event){
+    //   console.log('接收到服务端发来的消息');
+    //   //获取服务端推送过来的消息
+    //   let data = event.data;
+    //   // let res = JSON.parse(data);
+    //   console.log(data);
+    // }
+    // ws.onclose = function(){
+
+    // }
   },
   methods: {
+    //实例化websocket
+    creatSocket() {
+      let that = this;
+      if ("WebSocket" in window) {
+        console.log("您的浏览器支持 WebSocket!");	
+        //实例化websocket	 
+        that.ws = new WebSocket("ws://localhost:8088/api/chat");
+        //保存设置全局websocket对象
+        that.$global.setWs(that.ws);
+        //监听websocket连接打开方法
+        that.ws.onopen = function() {
+          console.log("打开websocket")
+          //调用keepalive方法（不一定都需要调用此方法，可注释）
+          //that.keepAlive()
+        }
+        //监听websocket错误方法
+        that.ws.onerror = function(ev) {
+          console.log("连接已出错...");
+            //延迟执行重连
+            setTimeout(() => {
+              that.creatSocket();
+            }, that.$global.delay);
+        };
+        //监听websocket关闭方法
+        that.ws.onclose = function(ev) {
+          // 关闭 websocket
+          console.log("连接已关闭...");
+          //延迟执行重连
+          setTimeout(() => {
+            that.creatSocket();
+          }, that.$global.delay);
+        };
+          
+        //监听websocket接收消息事件（接收来自服务器的实时消息）
+        that.ws.onmessage = function(res) {
+          console.log("App.vue收到服务器内容", res.data);
+        };
+          
+      } else {
+        // 浏览器不支持 WebSocket
+        console.log("您的浏览器不支持 WebSocket!");
+      }
+    },
+
+    eventMsg(){
+      let that = this;
+      this.$global.ws.onmessage = function(res) {
+          console.log(res);
+      }
+    },
+
     scrollToTop() {
       document.body.scrollIntoView();
     },
@@ -270,9 +357,12 @@ export default {
       instance.closeDrawer();
     },
 
-    //进行发送消息，后期可以与websocket结合
+    //进行发送消息(即send按钮的回调事件)，后期可以与websocket结合
     handleSend(message, next, file) {
-      console.log(message, next, file);
+      console.log('发送按钮被点击了');
+      console.log(message);
+      console.log(next);
+      console.log(file); 
       //这里单纯为了营造一个延迟，后期可以去掉
       setTimeout(() => {
         next();
@@ -281,34 +371,35 @@ export default {
 
     //此函数用于生成若干消息，后期可以从服务器获取
     handlePullMessages(contact, next, instance) {
-      const otheruser = {
-        id: contact.id,
-        displayName: contact.displayName,
-        avatar: contact.avatar,
-      };
-      setTimeout(() => {
-        const messages = [
-          generateMessage(instance.currentContactId, this.user),
-          generateMessage(instance.currentContactId, otheruser),
-          generateMessage(instance.currentContactId, this.user),
-          generateMessage(instance.currentContactId, otheruser),
-          generateMessage(instance.currentContactId, this.user),
-          generateMessage(instance.currentContactId, this.user),
-          generateMessage(instance.currentContactId, otheruser),
-          {
-            ...generateMessage(instance.currentContactId, this.user),
-            ...{ status: "failed" },
-          },
-        ];
-        let isEnd = false;
-        if (
-          instance.getMessages(instance.currentContactId).length +
-            messages.length >
-          11
-        )
-          isEnd = true;
-        next(messages, isEnd);
-      }, 500);
+      console.log("我从服务器获取消息...");
+      // const otheruser = {
+      //   id: contact.id,
+      //   displayName: contact.displayName,
+      //   avatar: contact.avatar,
+      // };
+      // setTimeout(() => {
+      //   const messages = [
+      //     generateMessage(instance.currentContactId, this.user),
+      //     generateMessage(instance.currentContactId, otheruser),
+      //     generateMessage(instance.currentContactId, this.user),
+      //     generateMessage(instance.currentContactId, otheruser),
+      //     generateMessage(instance.currentContactId, this.user),
+      //     generateMessage(instance.currentContactId, this.user),
+      //     generateMessage(instance.currentContactId, otheruser),
+      //     {
+      //       ...generateMessage(instance.currentContactId, this.user),
+      //       ...{ status: "failed" },
+      //     },
+      //   ];
+      //   let isEnd = false;
+      //   if (
+      //     instance.getMessages(instance.currentContactId).length +
+      //       messages.length >
+      //     11
+      //   )
+      //     isEnd = true;
+      //   next(messages, isEnd);
+      // }, 500);
     },
 
     //更换菜单
