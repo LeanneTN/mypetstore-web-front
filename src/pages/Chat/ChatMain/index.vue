@@ -62,22 +62,34 @@ const generateRandWord = () => {
     .substr(2);
 };
 //该函数用于生成随机的消息
-const generateMessage = (toContactId = "", fromUser) => {
-  if (!fromUser) {
-    fromUser = {
-      id: "system",
-      displayName: "系统测试",
-      avatar: "http://upload.qqbodys.com/allimg/1710/1035512943-0.jpg",
-    };
-  }
+// const generateMessage = (toContactId = "", fromUser) => {
+//   if (!fromUser) {
+//     fromUser = {
+//       id: "system",
+//       displayName: "系统测试",
+//       avatar: "http://upload.qqbodys.com/allimg/1710/1035512943-0.jpg",
+//     };
+//   }
+//   return {
+//     id: generateRandId(), //消息的id
+//     status: "succeed",  //消息的状态
+//     type: "text", //消息的类型
+//     sendTime: getTime(),  //消息的发送时间
+//     content: generateRandWord(),  //生成随机的消息内容
+//     toContactId,  //消息是发送给谁的
+//     fromUser, //消息的来源是谁
+//   };
+// };
+
+const generateMessage = (message) => {
   return {
-    id: generateRandId(), //消息的id
-    status: "succeed",  //消息的状态
-    type: "text", //消息的类型
-    sendTime: getTime(),  //消息的发送时间
-    content: generateRandWord(),  //生成随机的消息内容
-    toContactId,  //消息是发送给谁的
-    fromUser, //消息的来源是谁
+    id: message.id, //消息的id
+    status: message.status,  //消息的状态
+    type: message.type, //消息的类型
+    sendTime: message.sendTime,  //消息的发送时间
+    content: message.content,  //生成随机的消息内容
+    toContactId: message.toContactId,  //消息是发送给谁的
+    fromUser: message.fromUser, //消息的来源是谁
   };
 };
 
@@ -85,8 +97,11 @@ export default {
   name: "ChatMain",
   data() {
     return {
-      //当前用户的信息，后期可以通过vuex获取
+      //当前用户的信息
       user: {},
+
+      //messages
+      messages: [],
 
       //以下的属性没有用，但不要改
       theme: "default", //主题
@@ -136,6 +151,8 @@ export default {
     this.user.displayName = this.loginAccount.username;
     this.user.avatar = '';
 
+    console.log(this.user);
+
     this.creatSocket();
     this.eventMsg();
 
@@ -147,26 +164,8 @@ export default {
       index: "[1]群组",
       unread: 0,
       lastSendTime: 0,
-      lastContent: "1",
+      lastContent: '',
     };
-    // const contactData2 = {
-    //   id: "contact-2",
-    //   displayName: "铁牛",
-    //   avatar: "http://upload.qqbodys.com/img/weixin/20170803/jiq4nzrkrnd0e.jpg",
-    //   index: "T",
-    //   unread: 32,
-    //   lastSendTime: 3,
-    //   lastContent: "你好123",
-    // };
-    // const contactData3 = {
-    //   id: "contact-3",
-    //   displayName: "如花",
-    //   avatar: "https://dss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4275424924,2201401076&fm=111&gp=0.jpg",
-    //   index: "R",
-    //   unread: 1,
-    //   lastSendTime: 3,
-    //   lastContent: "吃饭了嘛",
-    // };
 
     const { IMUI } = this.$refs;
     let contactList = [group];
@@ -210,70 +209,6 @@ export default {
       },
     ]);
     IMUI.initEmoji(EmojiData);
-
-    //获取聊天框这个元素
-    // const { IMUI } = this.$refs;
-    // setTimeout(() => {
-    //   IMUI.changeContact("contact-1");
-    // }, 500);
-
-    // IMUI.setLastContentRender("event", message => {
-    //   return `[自定义通知内容]`;
-    // });
-
-    // let contactList = [
-    //   { ...contactData1 },
-    //   { ...contactData2 },
-    //   { ...contactData3 },
-    // ];
-
-    //初始化消息记录
-    // IMUI.initContacts(contactList);
-    // //初始化表情，文件上传，图片
-    // IMUI.initEditorTools([
-    //   {
-    //     name: "emoji",
-    //   },
-    //   {
-    //     name: "uploadFile",
-    //   },
-    //   {
-    //     name: "uploadImage",
-    //   },
-    //   {
-    //     name: "test1",
-    //     click: () => {
-    //       IMUI.$refs.editor.selectFile("application/vnd.ms-excel");
-    //     },
-    //     render: () => {
-    //     },
-    //   },
-    //   {
-    //     name: "test1",
-    //     click: () => {
-    //       IMUI.initEditorTools([{ name: "uploadFile" }, { name: "emoji" }]);
-    //     },
-    //     render: () => {
-    //     },
-    //   },
-    //   {
-    //     name: "test2",
-    //     isRight: true,
-    //     title: "上传 Excel",
-    //     click: () => {
-    //     },
-    //     render: () => {
-    //     },
-    //   },
-    // ]);
-    // IMUI.initEmoji(EmojiData);
-
-    //初始化第一个消息记录部分
-    // const { SimpleIMUI } = this.$refs;
-    // contactData1.id = "11";
-    // SimpleIMUI.initContacts([contactData1]);
-    // SimpleIMUI.initEmoji(EmojiData);
-    // SimpleIMUI.changeContact(contactData1.id);
   },
   methods: {
     //实例化websocket
@@ -323,14 +258,38 @@ export default {
         console.log(message);
         console.log(message.content);
         this.contactList = [];
-        
+        const { IMUI } = this.$refs;
         //这证明是一条广播消息（某某上线了）
         if(message.toContactId == null && message.fromUser == null){
-          const { IMUI } = this.$refs;
           for(let contactData of message.content){
             //联系人列表进行添加
             IMUI.appendContact(contactData);
           }
+        }
+        //其他统统按照普通消息处理
+        else{
+          console.log('我收到了消息');
+          console.log(message);
+
+          // const msg = {
+          //   id: message.id,
+          //   status: message.status,
+          //   type: message.type,
+          //   sendTime: message.sendTime,
+          //   content: message.content,
+          //   toContactId: message.toContactId,
+          //   fromUser:{
+          //     id: message.fromUser.id,
+          //     displayName: message.fromUser.displayName,
+          //     avatar: message.fromUser.avatar,
+          //   }
+          // };
+
+          this.messages.push(message);
+          console.log(message);
+          IMUI.appendMessage(message, true);
+          console.log(IMUI.getMessages());
+          console.log(this.messages);
         }
       }
     },
@@ -363,9 +322,9 @@ export default {
     },
 
     //追加一条消息
-    appendMessage() {
-      const contact = IMUI.currentContact;
-      const message = generateMessage("contact-3");
+    appendMessage(msg) {
+      const { IMUI } = this.$refs;
+      const message = generateMessage(msg);
       message.fromUser = {
         ...message.fromUser,
         ...this.user,
@@ -387,44 +346,23 @@ export default {
     handleSend(message, next, file) {
       console.log('发送按钮被点击了');
       console.log(message);
-      console.log(next);
-      console.log(file); 
-      //这里单纯为了营造一个延迟，后期可以去掉
-      setTimeout(() => {
-        next();
-      }, 500);
+      message.status = 'succeed';
+      this.ws.send(JSON.stringify(message));
+      const { IMUI } = this.$refs;
+      console.log(IMUI.getMessages());
     },
 
     //此函数用于生成若干消息，后期可以从服务器获取
-    handlePullMessages(contact, next, instance) {
+    handlePullMessages(contact, next) {
       console.log("我在获取历史消息...");
-      const otheruser = {
-        id: contact.id,
-        displayName: contact.displayName,
-        avatar: contact.avatar,
-      };
-      setTimeout(() => {
-        const messages = [];
-        // const messages = [
-        //   generateMessage(instance.currentContactId, this.user),
-        //   generateMessage(instance.currentContactId, otheruser),
-        //   generateMessage(instance.currentContactId, this.user),
-        //   generateMessage(instance.currentContactId, otheruser),
-        //   generateMessage(instance.currentContactId, this.user),
-        //   generateMessage(instance.currentContactId, this.user),
-        //   generateMessage(instance.currentContactId, otheruser),
-        //   {
-        //     ...generateMessage(instance.currentContactId, this.user),
-        //     ...{ status: "failed" },
-        //   },
-        // ];
-        let isEnd = false;
-        if (instance.getMessages(instance.currentContactId).length + messages.length > 11){
-          isEnd = true;
+      const { IMUI } = this.$refs;
+      const historyMessages = [];
+      for(let msg of this.messages){
+        if(msg.toContactId == contact.id){
+          historyMessages.push(msg);
         }
-        isEnd = true;
-        next(messages, isEnd);
-      }, 500);
+      }
+      next(historyMessages, true);
     },
 
     //更换菜单
